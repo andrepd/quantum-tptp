@@ -1,0 +1,18 @@
+cnf(swap2,axiom,
+  $(X - swap N1 N2) = $(X - swap N2 N1)
+).
+cnf(swap3,axiom,
+  $(X - swap N1 N2 - swap N1 N2) = X
+).
+cnf(swap6,axiom,
+  $(X - swap N1 N2 - OP N1 N3) = $(X - OP N2 N3 - swap N1 N2)
+| N1=N3|N2=N3 ).
+
+cnf(property10,lemma,$(
+  $(S - cnot Q1 Q3 - cnot Q2 Q3) = $(S - cnot Q2 Q3 - cnot Q1 Q3)
+)).
+
+fof(step1,conjecture,$( 
+  $(S - cnot Q1 Q3 - cnot Q2 Q3) = 
+  $(S - swap Q1 Q2 - cnot Q1 Q3 - cnot Q2 Q3 - swap Q1 Q2) 
+)).

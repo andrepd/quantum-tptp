@@ -1,0 +1,6 @@
+include('QUA001-1.ax').
+
+fof(step5,conjecture,$( 
+  $(S - h Q2 - h Q1 - cnot Q2 Q1 - h Q1 - h Q1) = 
+  $(S - h Q1 - h Q2 - cnot Q2 Q1) 
+)).

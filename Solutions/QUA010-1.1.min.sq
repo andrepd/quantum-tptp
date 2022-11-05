@@ -1,0 +1,8 @@
+cnf(e,axiom,$(
+  $(S - cnot N1 N2 - cnot N1 N2) = S
+)).
+
+fof(step,conjecture,$( 
+  $(S - cnot Q1 Q3 - cnot Q2 Q3) = 
+  $(S - cnot Q1 Q3 - cnot Q2 Q3 - cnot Q1 Q3 - cnot Q2 Q3 - cnot Q2 Q3 - cnot Q1 Q3) 
+)).

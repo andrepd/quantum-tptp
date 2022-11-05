@@ -1,0 +1,12 @@
+cnf(independence1,axiom,$(
+  $(X - OP1 N1 - OP2 N2) = $(X - OP2 N2 - OP1 N1)
+)).
+
+cnf(a,axiom,$(
+  $(X - h N - h N) = X
+)).
+
+fof(step5,conjecture,$( 
+  $(S - h Q2 - h Q1 - cnot Q2 Q1 - h Q1 - h Q1) = 
+  $(S - h Q1 - h Q2 - cnot Q2 Q1) 
+)).

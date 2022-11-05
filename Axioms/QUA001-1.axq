@@ -1,0 +1,183 @@
+% QUA001-1: QC_0 (untyped, arithmetic modulo 24) %
+
+% Gate application: 
+%   appN(gate, φ1, …, φN, state), where
+%     - gate is the name of the operator
+%     - φ1, …, φn are the input qubits
+%     - state is the state to which the operator is applied
+%   equivalent to
+%     gate|ψ1…ψM>, where |ψ1…ψM> = state and φ1,…,φN ⊆ ψ1,…,ψM
+% Examples:
+%   app1(h, q1, state): 
+%     apply hadamard gate to state on qubit q1
+%   app1(p(ang180), q2, state): 
+%     apply phase shift of π to state on qubit q2
+%   app2(cnot, q1, q2, app1(h, q1, state)): 
+%     first apply hadamard gate to state on qubit 1, then apply controlled not gate with 
+%     control qubit q1 and target qubit q2
+% The appN functions are partial, since they are undefined when any qubits in φ1,…φn are 
+% equal. Therefore ALWAYS remember to guard with a "(∧_ij φi != φj) ⇒ …" clause. 
+
+% Gate application, alternative notation: 
+%   $(state - gate φ1 … φN) == appN(gate, φ1, …, φN, state)
+% Examples:
+%   $(state - h q1): 
+%     apply hadamard gate to state on qubit q1
+%   $(state - p(ang180) q2): 
+%     apply phase shift of π to state on qubit q2
+%   $(state - h q1 - cnot q1 q2): 
+%     first apply hadamard gate to state on qubit 1, then apply controlled not gate with 
+%     control qubit q1 and target qubit q2
+% If using this notation, there is no need to manually guard, simply wrap the relevant 
+% expression in another $(…).
+
+% Basic gates:
+%  Hadamard       │ ──[H]───  │ app1(h, qubit, state)
+%  Phase shift    │ ─[P(θ)]─  │ app1(p(θ), qubit, state)
+%  Controlled not │ ───⋅────  │ app2(cnot, control, target, state)
+%                 │ ───⊕────  │    
+%  Swap           │ ───\/───  │ app2(swap, qubit1, qubit2, state)
+%                 │ ───/\───  │    
+% 
+% Defined gates:
+%   Pauli Z    │ ──[Z]───  │  app1(z, qubit, state)
+%   Pauli X    │ ──[X]───  │  app1(x, qubit, state)
+%   X-rotation │ [Rx(θ)]─  │  app1(rx(θ), qubit, state)
+% 
+% Global phase:
+%   o(θ, state)
+
+
+
+% --- Arithmetic, simplified version (with phases being multiples of τ/24)
+
+include('ARI001-24.ax').
+
+% --- Independence of order of operators on different qubits
+
+cnf(independence1,axiom,$(
+  $(S - OP1 Q1 - OP2 Q2) = $(S - OP2 Q2 - OP1 Q1)
+)).
+
+cnf(independence2,axiom,$( 
+  $(S - OP1 Q1 - OP2 Q2 Q3) = $(S - OP2 Q2 Q3 - OP1 Q1)
+)).
+
+cnf(independence3,axiom,$( 
+  $(S - OP1 Q1 Q2 - OP2 Q3 Q4) = $(S - OP2 Q3 Q4 - OP1 Q1 Q2)
+)).
+
+% --- Axioms for the swap operation
+
+% swap is an exception: for simplicity, app2(swap, Q, Q, State) is defined and interpreted 
+% as the identity
+cnf(swap1,axiom,
+  $(S - swap Q1 Q1) = S
+).
+
+cnf(swap2,axiom,
+  $(S - swap Q1 Q2) = $(S - swap Q2 Q1)
+).
+
+cnf(swap3,axiom,
+  $(S - swap Q1 Q2 - swap Q1 Q2) = S
+).
+
+cnf(swap4,axiom,
+  $(S - swap Q1 Q2 - OP Q1) = $(S - OP Q2 - swap Q1 Q2)
+).
+
+cnf(swap5,axiom,
+  $(S - swap Q1 Q2 - OP Q1 Q2) = $(S - OP Q2 Q1 - swap Q1 Q2)
+).
+
+cnf(swap6,axiom,
+  $(S - swap Q1 Q2 - OP Q1 Q3) = $(S - OP Q2 Q3 - swap Q1 Q2)
+| Q1=Q3|Q2=Q3 ).
+
+cnf(swap7,axiom, 
+  $(S - swap Q1 Q2 - OP Q3 Q1) = $(S - OP Q3 Q2 - swap Q1 Q2)
+| Q1=Q3|Q2=Q3 ).
+
+% --- Global phase
+
+cnf(phase1,axiom, $(o(T,S) - OP Q) = o(T,$(S - OP Q)) ).
+cnf(phase2,axiom, $(o(T,S) - OP Q1 Q2) = o(T,$(S - OP Q1 Q2)) ).
+
+% --- Definitions
+
+cnf(def_z,definition,
+  z = p(ang180)
+).
+
+cnf(def_x,definition,
+  $(S - x Q) = $(S - h Q - z Q - h Q)
+).
+
+cnf(def_rx,definition,
+  $(S - rx(T) Q) = $(o(minus(half(T)),S) - h Q - p(T) Q - h Q)
+).
+
+% --- QC0 axioms
+
+cnf(a,axiom,$(
+  $(S - h Q - h Q) = S
+)).
+
+cnf(b,axiom,(
+  o(ang0,S) = S
+)).
+
+cnf(c,axiom,(
+  o(add(P1,P2),S) = o(P1,o(P2,S))
+)).
+
+cnf(d,axiom,$(
+  $(S - p(ang0) Q) = S
+)).
+
+cnf(e,axiom,$(
+  $(S - cnot Q1 Q2 - cnot Q1 Q2) = S
+)).
+
+cnf(f,axiom,$(
+  $(S - cnot Q1 Q2 - x Q2) = $(S - x Q1 - cnot Q1 Q2 - x Q1)
+)).
+
+cnf(g,axiom,$(
+  $(S - cnot Q1 Q3 - cnot Q2 Q3) = $(S - cnot Q1 Q2 - cnot Q2 Q3 - cnot Q1 Q2)
+)).
+
+cnf(h,axiom,$(
+  $(S - cnot Q1 Q2 - cnot Q2 Q1 - cnot Q1 Q2) = $(S - swap Q1 Q2)
+)).
+
+cnf(i,axiom,$(
+  $(S - p(T) Q1 - cnot Q1 Q2) = $(S - cnot Q1 Q2 - p(T) Q1)
+)).
+
+cnf(j,axiom,$(
+  $(S - cnot Q1 Q3 - cnot Q1 Q2) = $(S - cnot Q1 Q2 - cnot Q1 Q3)
+)).
+
+cnf(k,axiom,$(
+  $(S - p(A) Q - p(B) Q) = $(S - p(add(A,B)) Q)
+)).
+
+cnf(l,axiom,$(
+  $(S - x Q - p(T) Q - x Q) = $(o(T,S) - p(minus(T)) Q)
+)).
+
+cnf(m,axiom,$(
+  $(S - h Q2 - cnot Q1 Q2 - h Q2) = $(S - p(ang90) Q1 - p(ang90) Q2 - cnot Q1 Q2 - p(ang270) Q2 - cnot Q1 Q2)
+)).
+
+cnf(n,axiom,$(
+  $(S - cnot Q1 Q2 - rx(minus(T1)) Q1 - rx(T1) Q2 - cnot Q1 Q2 - h Q2 - cnot Q1 Q2 - rx(T2) Q1 - rx(T2) Q2 - cnot Q1 Q2 - h Q2) = 
+  $(S - h Q2 - cnot Q1 Q2 - rx(T2) Q1 - rx(T2) Q2 - cnot Q1 Q2 - h Q2 - cnot Q1 Q2 - rx(minus(T1)) Q1 - rx(T1) Q2 - cnot Q1 Q2)
+)).
+
+cnf(o,axiom,$(
+  $(S - cnot Q2 Q3 - h Q1 - rx(minus(T1)) Q2 - rx(T1) Q3 - cnot Q2 Q1 - cnot Q3 Q1 - h Q1 - rx(T1) Q2 - rx(minus(T1)) Q3 - cnot Q2 Q3 - cnot Q2 Q1 - rx(T2) Q1 - rx(T2) Q2 - h Q3 - cnot Q2 Q3 - cnot Q1 Q3 - rx(minus(T2)) Q1 - rx(minus(T2)) Q2 - h Q3 - cnot Q2 Q1) = 
+  $(S - cnot Q2 Q1 - rx(minus(T2)) Q1 - rx(minus(T2)) Q2 - h Q3 - cnot Q1 Q3 - cnot Q2 Q3 - rx(T2) Q1 - rx(T2) Q2 - h Q3 - cnot Q2 Q1 - cnot Q2 Q3 - h Q1 - rx(T1) Q2 - rx(minus(T1)) Q3 - cnot Q3 Q1 - cnot Q2 Q1 - h Q1 - rx(minus(T1)) Q2 - rx(T1) Q3 - cnot Q2 Q3) 
+)).

@@ -1,0 +1,14 @@
+cnf(swap3,axiom,
+  $(X - swap N1 N2 - swap N1 N2) = X
+).
+cnf(swap4,axiom,
+  $(X - swap N1 N2 - OP N1) = $(X - OP N2 - swap N1 N2)
+).
+cnf(swap5,axiom,
+  $(X - swap N1 N2 - OP N1 N2) = $(X - OP N2 N1 - swap N1 N2)
+).
+
+fof(step1,conjecture,$( 
+  $(S - cnot Q1 Q2 - p(T) Q2 - cnot Q1 Q2) = 
+  $(S - swap Q1 Q2 - cnot Q2 Q1 - p(T) Q1 - cnot Q2 Q1 - swap Q1 Q2) 
+)).

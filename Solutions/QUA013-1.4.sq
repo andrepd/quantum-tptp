@@ -1,0 +1,6 @@
+include('QUA001-1.ax').
+
+fof(step4,conjecture,$( 
+  $(S - cnot Q2 Q1 - swap Q1 Q2 - cnot Q2 Q3 - swap Q1 Q2 - cnot Q2 Q1) = 
+  $(S - cnot Q2 Q1 - cnot Q1 Q3 - cnot Q2 Q1) 
+)).

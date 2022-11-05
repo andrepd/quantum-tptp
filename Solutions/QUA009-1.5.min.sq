@@ -1,0 +1,18 @@
+cnf(independence1,axiom,$(
+  $(X - OP1 N1 - OP2 N2) = $(X - OP2 N2 - OP1 N1)
+)).
+
+cnf(a,axiom,$(
+  $(X - h N - h N) = X
+)).
+
+cnf(def_rx,definition,
+  $(X - rx(T) N) = $(o(minus(half(T)),X) - h N - p(T) N - h N)
+).
+
+cnf(phase2,axiom, $(o(T,X) - OP N1 N2) = o(T,$(X - OP N1 N2)) ).
+
+fof(step5,conjecture,$( 
+  $(o(minus(half(T)),S) - cnot Q2 Q1 - h Q1 - h Q2 - p(T) Q2 - h Q1 - h Q2 - cnot Q2 Q1) = 
+  $(S - cnot Q2 Q1 - rx(T) Q2 - cnot Q2 Q1)
+)).

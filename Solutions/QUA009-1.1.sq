@@ -1,0 +1,6 @@
+include('QUA001-1.ax').
+
+fof(step1,conjecture,$( 
+  $(S - cnot Q1 Q2 - rx(T) Q1 - cnot Q1 Q2) = 
+  $(o(minus(half(T)),S) - cnot Q1 Q2 - h Q1 - h Q2 - p(T) Q1 - h Q1 - h Q2 - cnot Q1 Q2)
+)).
