@@ -31,19 +31,19 @@ print()
 
 def seq(x): return ' '.join(x)
 
-cnf(f'x0 = x', name=f'x0', role='definition')
+cnf(f'rx0 = rx', name=f'rx0', role='definition')
 for i in range(n):
   q = [f'Q{j+1}' for j in range(i+2)]
-  lhs = f'x{i+1}(T) {seq(q)}'
+  lhs = f'rx{i+1}(T) {seq(q)}'
   rhs = ' - '.join((
       f'h {q[0]}',
-      f'x{i}(half(T)) {seq(q[1:])}',
+      f'rx{i}(half(T)) {seq(q[1:])}',
       f'cnot {q[-1]} {q[0]}',
-      f'x{i}(minus(half(T))) {seq(q[1:])}',
+      f'rx{i}(minus(half(T))) {seq(q[1:])}',
       f'cnot {q[-1]} {q[0]}',
       f'h {q[0]}',
     ))
-  cnf(f' $(S - {lhs}) =\n  $(S - {rhs})\n', name=f'x{i+1}', role='definition')
+  cnf(f' $(S - {lhs}) =\n  $(S - {rhs})\n', name=f'rx{i+1}', role='definition')
 
 print()
 
@@ -74,9 +74,9 @@ for i in range(n):
 
 print()
 
-cnf(f's0 = s', name=f's0', role='definition')
+cnf(f'o0 = o', name=f'o0', role='definition')
 for i in range(n+1):
   q = [f'Q{j+1}' for j in range(i+1)]
-  lhs = f's{i+1} {seq(q)}'
-  rhs = f'p{i} {seq(q)}'
-  cnf(f' $(S - {lhs}) =\n  $(S - {rhs})\n', name=f's{i+1}', role='definition')
+  lhs = f'o{i+1}(T) {seq(q)}'
+  rhs = f'p{i}(T) {seq(q)}'
+  cnf(f' $(S - {lhs}) =\n  $(S - {rhs})\n', name=f'o{i+1}', role='definition')
